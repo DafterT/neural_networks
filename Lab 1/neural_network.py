@@ -7,9 +7,9 @@ from read_dataset import get_data
 
 INPUT_DIM = 28 * 28
 OUT_DIM = 26
-H_DIM = 28 * 28 * 26
+H_DIM = 28 * 28 * 26 // 2
 ALPHA = 0.0001
-NUM_EPOCHS = 2
+NUM_EPOCHS = 20
 
 
 def softmax(t):
@@ -77,6 +77,10 @@ def train(dataset, check_correct, W1, b1, W2, b2, relu, relu_deriv):
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, relu)
         loss_arr.append(float(accuracy))
         print("Accuracy:", accuracy)
+    calc.savetxt(f'data/{relu.__name__}_W1.txt', W1)
+    calc.savetxt(f'data/{relu.__name__}_b1.txt', b1)
+    calc.savetxt(f'data/{relu.__name__}_W2.txt', W2)
+    calc.savetxt(f'data/{relu.__name__}_b2.txt', b2)
     return loss_arr
 
 
@@ -96,14 +100,19 @@ def main():
     W2 = (W2 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
     b2 = (b2 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
     calc.random.seed(0)
-    for (act, act_deriv), name in get_functions()[:1]:
+    for (act, act_deriv), name in get_functions():
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, act)
         print("Accuracy:", accuracy)
-        x = [accuracy, *train(dataset.copy(), check_correct.copy(), W1, b1, W2, b2, act, act_deriv)]
+        x = [
+            accuracy, *train(
+                dataset.copy(), check_correct.copy(),
+                W1.copy(), b1.copy(), W2.copy(), b2.copy(),
+                act, act_deriv)
+        ]
         print(x)
         with open('log.log', 'r+') as f:
             f.seek(0, 2)
-            f.write(f'{name:} {str(x)}\n')
+            f.write(f'{name:} {repr(x)}\n')
         plt.plot(x, label=name)
     plt.legend()
     plt.show()

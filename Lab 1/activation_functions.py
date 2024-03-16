@@ -6,7 +6,7 @@ def _sigmoid(t):
 
 
 def _sigmoid_deriv(t):
-    return calc.exp(t) / (calc.exp(2 * t) + 2 * calc.exp(t) + 1)
+    return _sigmoid(t) * (1 - _sigmoid(t))
 
 
 def get_sigmoid():
