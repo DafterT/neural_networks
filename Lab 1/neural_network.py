@@ -17,20 +17,20 @@ def softmax(t):
     return out / calc.sum(out)
 
 
-def sparse_cross_entropy(z, y):
-    return -calc.log(z[0, y])
+def softmax_deriv(t):
+    return softmax(t) * (1 - softmax(t))
 
 
 def to_full(y, num_classes):
-    y_full = calc.zeros((1, num_classes))
-    y_full[0, y] = 1
+    y_full = calc.zeros((num_classes, 1))
+    y_full[y, 0] = 1
     return y_full
 
 
 def predict(x, W1, b1, W2, b2, relu):
-    t1 = x @ W1 + b1
+    t1 = W1 @ x + b1
     h1 = relu(t1)
-    t2 = h1 @ W2 + b2
+    t2 = W2 @ h1 + b2
     z = softmax(t2)
     return z
 
@@ -38,6 +38,7 @@ def predict(x, W1, b1, W2, b2, relu):
 def calc_accuracy(check_correct, W1, b1, W2, b2, relu):
     correct = 0
     for x, y in check_correct:
+        x = x[:, None]
         z = predict(x, W1, b1, W2, b2, relu)
         y_pred = calc.argmax(z)
         if y_pred == y:
@@ -52,28 +53,27 @@ def train(dataset, check_correct, W1, b1, W2, b2, relu, relu_deriv):
         random.shuffle(dataset)
         for i in range(len(dataset)):
             x, y = dataset[i]
+            x = x[:, None]
             # Forward
-            t1 = x @ W1 + b1
+            t1 = W1 @ x + b1
             h1 = relu(t1)
-            t2 = h1 @ W2 + b2
-            z = softmax(t2)
-            E = calc.sum(sparse_cross_entropy(z, y))
+            t2 = W2 @ h1 + b2
+            h2 = softmax(t2)
             # Backward
             y_full = to_full(y, OUT_DIM)
-            dE_dt2 = z - y_full
-            dE_dW2 = h1.T @ dE_dt2
-            dE_db2 = dE_dt2
-            dE_dh1 = dE_dt2 @ W2.T
-            dE_dt1 = dE_dh1 * relu_deriv(t1)
-            dE_dW1 = x[:, None] @ dE_dt1
-            dE_db1 = dE_dt1
+            d3 = (h2 - y_full)
+            d2 = W2.T @ d3
+            dW2 = ((d3 * softmax_deriv(t2)) @ h1.T) * ALPHA
+            dW1 = ((d2 * relu_deriv(t1)) @ x.T) * ALPHA
+            db2 = (d3 * softmax_deriv(t2)) * ALPHA
+            db1 = (d2 * relu_deriv(t1)) * ALPHA
             # Update
-            W1 = W1 - ALPHA * dE_dW1
-            b1 = b1 - ALPHA * dE_db1
-            W2 = W2 - ALPHA * dE_dW2
-            b2 = b2 - ALPHA * dE_db2
+            W2 = W2 - dW2
+            W1 = W1 - dW1
+            b2 = b2 - db2
+            b1 = b1 - db1
             if i % 100 == 0:
-                print(ep, i, float(E))
+                print(ep, i, calc.argmax(h2), y)
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, relu)
         loss_arr.append(float(accuracy))
         print("Accuracy:", accuracy)
@@ -85,21 +85,21 @@ def train(dataset, check_correct, W1, b1, W2, b2, relu, relu_deriv):
 
 
 def main():
+    calc.random.seed(0)
     dataset = get_data()
     random.shuffle(dataset)
     check_correct = dataset[:int(calc.round(len(dataset) * 0.1))]
     dataset = dataset[int(calc.ceil(len(dataset) * 0.1)):]
 
-    W1 = calc.random.rand(INPUT_DIM, H_DIM)
-    b1 = calc.random.rand(1, H_DIM)
-    W2 = calc.random.rand(H_DIM, OUT_DIM)
-    b2 = calc.random.rand(1, OUT_DIM)
+    W1 = calc.random.rand(H_DIM, INPUT_DIM)
+    b1 = calc.random.rand(H_DIM, 1)
+    W2 = calc.random.rand(OUT_DIM, H_DIM)
+    b2 = calc.random.rand(OUT_DIM, 1)
 
-    W1 = (W1 - 0.5) * 2 * calc.sqrt(1 / INPUT_DIM)
-    b1 = (b1 - 0.5) * 2 * calc.sqrt(1 / INPUT_DIM)
-    W2 = (W2 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
-    b2 = (b2 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
-    calc.random.seed(0)
+    W1 = (W1 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
+    b1 = (b1 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
+    W2 = (W2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
+    b2 = (b2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
     for (act, act_deriv), name in get_functions():
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, act)
         print("Accuracy:", accuracy)

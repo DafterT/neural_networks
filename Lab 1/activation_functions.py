@@ -51,8 +51,8 @@ def get_tanh():
 
 def get_functions():
     functions = []
-    functions.append((get_tanh(), 'y = Tanh(x)'))
     functions.append((get_linear(), 'y = x'))
     functions.append((get_linear_max(), 'y = max(x, 0)'))
+    functions.append((get_tanh(), 'y = Tanh(x)'))
     functions.append((get_sigmoid(), 'y = sigm(x)'))
     return functions
