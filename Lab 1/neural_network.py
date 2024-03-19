@@ -1,5 +1,6 @@
 import random
 
+import keyboard
 from matplotlib import pyplot as plt
 
 from activation_functions import *
@@ -7,7 +8,7 @@ from read_dataset import get_data
 
 INPUT_DIM = 28 * 28
 OUT_DIM = 26
-H_DIM = 28 * 28 * 26 // 2
+H_DIM = 28 * 28 * 26 // 10
 ALPHA = 0.0001
 NUM_EPOCHS = 20
 
@@ -49,8 +50,12 @@ def calc_accuracy(check_correct, W1, b1, W2, b2, relu):
 
 def train(dataset, check_correct, W1, b1, W2, b2, relu, relu_deriv):
     loss_arr = []
-    for ep in range(NUM_EPOCHS):
+    #for ep in range(NUM_EPOCHS):
+    accuracy = 0
+    ep = 0
+    while accuracy < 95 and (not keyboard.is_pressed('ctrl') or not keyboard.is_pressed('alt')):
         random.shuffle(dataset)
+        ep += 1
         for i in range(len(dataset)):
             x, y = dataset[i]
             x = x[:, None]
@@ -85,7 +90,6 @@ def train(dataset, check_correct, W1, b1, W2, b2, relu, relu_deriv):
 
 
 def main():
-    calc.random.seed(0)
     dataset = get_data()
     random.shuffle(dataset)
     check_correct = dataset[:int(calc.round(len(dataset) * 0.1))]
@@ -100,7 +104,7 @@ def main():
     b1 = (b1 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
     W2 = (W2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
     b2 = (b2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
-    for (act, act_deriv), name in get_functions():
+    for (act, act_deriv), name in [(get_sigmoid(), 'sigmoid')]:
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, act)
         print("Accuracy:", accuracy)
         x = [
@@ -109,12 +113,12 @@ def main():
                 W1.copy(), b1.copy(), W2.copy(), b2.copy(),
                 act, act_deriv)
         ]
-        print(x)
         with open('log.log', 'r+') as f:
             f.seek(0, 2)
             f.write(f'{name:} {repr(x)}\n')
         plt.plot(x, label=name)
     plt.legend()
+    plt.savefig(f'./img/result.png')
     plt.show()
 
 
