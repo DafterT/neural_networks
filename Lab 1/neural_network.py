@@ -104,7 +104,7 @@ def main():
     b1 = (b1 - 0.5) * 2 * calc.sqrt(1 / H_DIM)
     W2 = (W2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
     b2 = (b2 - 0.5) * 2 * calc.sqrt(1 / OUT_DIM)
-    for (act, act_deriv), name in [(get_sigmoid(), 'sigmoid')]:
+    for (act, act_deriv), name in [(get_linear_max(), 'max(x, 0)')]:
         accuracy = calc_accuracy(check_correct, W1, b1, W2, b2, act)
         print("Accuracy:", accuracy)
         x = [
