@@ -36,7 +36,3 @@ class Hopfild:
 
     def signum(self, a):  # функция активации
         return 1 if a >= 0 else -1
-
-    @staticmethod
-    def print_letter(brightness):
-        Image.fromarray((brightness.reshape(image_size[0], image_size[1]) + 1) * 128).show()

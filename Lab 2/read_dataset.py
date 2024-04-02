@@ -22,3 +22,6 @@ for i in letters:
 
 def get_data():
     return dataset
+
+def print_letter(brightness):
+    Image.fromarray((brightness.reshape(image_size[0], image_size[1]) + 1) * 128).show()
