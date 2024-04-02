@@ -1,17 +1,13 @@
-import string
-from time import sleep
-
 import numpy as np
 from PIL import Image
 
 from constants import image_size
-from read_dataset import dataset
 
 
 class Hopfild:
 
-    def __init__(self, k):  # инициализация
-        self.N = image_size[0] * image_size[1]  # количество нейронов
+    def __init__(self, N, k):  # инициализация
+        self.N = N  # количество нейронов
         self.K = k  # максимальное количество эпох распознавания сигнала
         self.W = np.zeros((self.N, self.N))  # матрица взаимодействий (весов)
 
@@ -20,31 +16,27 @@ class Hopfild:
             self.W += X.dot(X.T)
         self.W -= np.diag(np.full(self.N, self.W[0][0]))
 
+    def _iteration(self, signal):
+        for i in range(self.N):
+            H_i = 0
+            for j in range(self.N):
+                H_i += self.W[i][j] * signal[j]
+            signal[i] = self.signum(H_i)
+        return signal
+
     def associations(self, signal):  # распознавание образа
         X = signal.copy()  # текущее состояние
-        for i in range(self.K):
-            x_before = X.copy()  # предыдущее состояние
-            a_i = np.dot(self.W, X)
-            X = self.signum(a_i)
+        for _ in range(self.K):
+            x_before = X.copy()
+            X = self._iteration(x_before.copy())
 
             if (x_before == X).all():  # выход из цикла, если значения стабилизировались
                 return X
-        print('!')
         return X
 
     def signum(self, a):  # функция активации
-        return np.array([1 if i >= 0 else -1 for i in a])
+        return 1 if a >= 0 else -1
 
     @staticmethod
     def print_letter(brightness):
         Image.fromarray((brightness.reshape(image_size[0], image_size[1]) + 1) * 128).show()
-
-
-l = Hopfild(100)
-l.remember(dataset[::8])
-print(string.ascii_lowercase[::8])
-l.print_letter(dataset[0])
-l.print_letter(l.associations(dataset[0]))
-# l.print_letter(dataset[10])
-# sleep(3)
-# l.print_letter(l.associations(dataset[-1]))
