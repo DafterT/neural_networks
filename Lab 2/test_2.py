@@ -1,6 +1,5 @@
-from constants import image_size
 from neural_network import Hopfild
-from read_dataset import get_data, print_letter
+from read_dataset import get_data, print_letter, image_size
 
 """
 Этот тест демонстрирует, что при сохранении близких значений получаются химеры

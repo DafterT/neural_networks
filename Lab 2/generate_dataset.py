@@ -2,13 +2,13 @@ import os
 import string
 
 from PIL import Image, ImageDraw, ImageFont
-from constants import image_size
 
 letters = string.ascii_lowercase
 
 os.makedirs('dataset', exist_ok=True)
 
 text_color = (0, 0, 0)
+image_size = (28, 28)
 background_color = (255, 255, 255)
 
 font_file = 'times_new_roman.ttf'
