@@ -1,7 +1,4 @@
 import numpy as np
-from PIL import Image
-
-from constants import image_size
 
 
 class Hopfild:
