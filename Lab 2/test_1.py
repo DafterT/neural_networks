@@ -9,5 +9,7 @@ from neural_network import Hopfild
 l = Hopfild(4, 100)
 l.remember([np.array([1, 1, -1, -1]).reshape(4, 1)])
 print(l.associations(np.array([1, -1, -1, 1])))
-print(l.associations(np.array([1, 1, -1, -1])))
+l.print_energy()
+l.clear_energy()
+print(l.associations(np.array([1, 1, -1, 1])))
 l.print_energy()

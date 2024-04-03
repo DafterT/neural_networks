@@ -8,6 +8,6 @@ from neural_network import Hopfild
 l = Hopfild(image_size[0] * image_size[1], 100)
 dataset = get_data()
 l.remember(dataset)
-x = swap_elements(dataset[2], 80)
-parse_3_images(x, dataset[2], l.associations(x))
+x = swap_elements(dataset[0], int(image_size[0] * image_size[1] * 0.8))
+parse_3_images(x, dataset[0], l.associations(x))
 l.print_energy()
