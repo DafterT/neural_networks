@@ -1,18 +1,9 @@
 import numpy as np
-from scipy.spatial import distance
-import matplotlib.pyplot as plt
 
 rand = np.random.RandomState(0)
 
 class Kohonen:
     def __init__(self, M: int, K: int):
-        """
-        Initial function
-
-        Args:
-            M (int): size of input layer
-            K (int): size of side of square
-        """
         self.M = M
         self.K = K
         self.W = None
@@ -49,19 +40,31 @@ class Kohonen:
             for data in dataset_copy:
                 self._iteration(data, learn_rate, radius_sq)
 
+def print_result(n, kh, train_data, iterations=10):
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(12, 4))
 
-def main():
-    kh = Kohonen(2, 10)
-    kh.generate_W()
-    train_data = np.append(np.random.uniform(0, 1, (5000, 2)), np.random.uniform(0, 1, (5000, 2)), axis=0)
+    # Первая картинка
+    plt.subplot(1, 3, 1)
     plt.scatter(*zip(*train_data))
-    plt.show()
-    plt.scatter(*zip(*kh.W.reshape(1, 100, 2)[0]))
-    plt.show()
-    kh.calculate(train_data, 10)
-    plt.scatter(*zip(*kh.W.reshape(1, 100, 2)[0]))
-    plt.show()
+    plt.title('Исходные данные')
 
+    # Вторая картинка
+    plt.subplot(1, 3, 2)
+    plt.scatter(*zip(*kh.W.reshape(1, n ** 2, 2)[0]))
+    plt.title('Случайно сгенерированные веса')
 
-if __name__ == '__main__':
-    main()
+    # Третья картинка
+    plt.subplot(1, 3, 3)
+    kh.calculate(train_data, iterations)
+    # Рисование линий между соседними элементами
+    for i in range(n):
+        for j in range(n):
+            if i > 0:
+                plt.plot([kh.W[i, j, 0], kh.W[i - 1, j, 0]], [kh.W[i, j, 1], kh.W[i - 1, j, 1]], 'k-', lw=0.5)
+            if j > 0:
+                plt.plot([kh.W[i, j, 0], kh.W[i, j - 1, 0]], [kh.W[i, j, 1], kh.W[i, j - 1, 1]], 'k-', lw=0.5)
+    plt.title('Веса после обучения')
+    plt.scatter(*zip(*kh.W.reshape(1, n ** 2, 2)[0]))
+
+    plt.show()
