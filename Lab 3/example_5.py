@@ -14,7 +14,7 @@ for i, learn_rate_0 in enumerate([0.001, 0.5, 0.99]):
     for j, radius_0 in enumerate([0.01, 1, 10]):
         kh = Kohonen(2, 10)
         kh.generate_W()
-        kh.calculate(train_data, 5, learn_rate_0=learn_rate_0, radius_0=radius_0)
+        kh.calculate(train_data, 10, learn_rate_0=learn_rate_0, radius_0=radius_0)
         plt.subplot(3, 3, i * 3 + j + 1)
         plt.scatter(*zip(*kh.W.reshape(1, 10 ** 2, 2)[0]))
         plt.title('$\eta$ = ' + str(learn_rate_0) + 
