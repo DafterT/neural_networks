@@ -2,7 +2,7 @@ import numpy as np
 from neural_network import Kohonen, rand, print_result
 
 """
-Хз как описать, но выглядит круто
+Повторяет форму исходных данных в разных углах
 """
 n = 10
 

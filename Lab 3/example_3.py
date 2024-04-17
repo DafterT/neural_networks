@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from neural_network import Kohonen, rand
 
+"""
+Показывает работу с 3 входными весами
+"""
+
 kh = Kohonen(3, 10)
 train_data = rand.uniform(0, 1, (3000, 3))
 
