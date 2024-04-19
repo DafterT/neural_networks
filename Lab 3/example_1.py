@@ -4,7 +4,7 @@ from neural_network import Kohonen, rand, print_result
 """
 Пример показывает решетку n на n, если все входные данные случайны
 """
-n = 10
+n = 2
 
 kh = Kohonen(2, n)
 kh.generate_W()

@@ -24,7 +24,7 @@ class Kohonen:
             for j in range(max(0, h - step), min(self.W.shape[1], h + step)):
 
                 dist_sq = np.square(i - g) + np.square(j - h)
-                dist_func = np.exp(-dist_sq / 2 / radius_sq)
+                dist_func = np.exp(-dist_sq / 2 / radius_sq ** 2)
                 self.W[i, j, :] += learn_rate * dist_func * (in_x - self.W[i, j, :])
 
     def calculate(self, dataset, count_iter,

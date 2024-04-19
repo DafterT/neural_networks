@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from neural_network import Kohonen, rand
 
 """
-Показывает разные результаты для сигма и тетта с 3 входными весами
+Показывает разные результаты для сигма и тетта с различными тетта и сигма
 """
 
 train_data = np.append(rand.uniform(0, 0.2, (5000, 2)), rand.uniform(0.8, 1, (5000, 2)), axis=0)
